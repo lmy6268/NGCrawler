@@ -1,4 +1,6 @@
 #ignore these files or dirs
 imgUrl.txt
 naverImg
+googleImg
 .DS_Store
+*.json

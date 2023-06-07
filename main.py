@@ -1,6 +1,5 @@
-import image_download_api as api
+from image_download_api import NGCrawler
 
 if __name__ == "__main__":
-    #크롤링 진행 
-    tasks = [["Google",300],["Naver",300]]
-    api.startToCrawl(tasks)
+    crawler = NGCrawler(search_on_google=True,search_on_naver=True,limit=500)
+    crawler.startToCrawl()
