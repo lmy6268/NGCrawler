@@ -6,7 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 #오류 처리
-from selenium.common.exceptions import StaleElementReferenceException
+from selenium.common.exceptions import StaleElementReferenceException,ElementClickInterceptedException
 #enum
 from enum import Enum
 #딜레이
@@ -19,7 +19,7 @@ import json
 import os
 from requests import get
 from multiprocessing import Pool
-
+import datetime
 
 class EngineType(Enum):
     """
@@ -28,24 +28,45 @@ class EngineType(Enum):
     Google = 0
     Naver = 1
 
-ROOT_PATH = "images"
+TOTAL_FILE_CNT = "total_file_cnt"
+now = datetime.datetime.now()
+
 
 class NGCrawler:
     """
     네이버, 구글 동시에 검색, 다운로드 가능한 크롤러
     """
 
-    def duplication_check_image(self, src, keyword, engineType: EngineType,imageDetails:dict):
+    def duplication_check_image(self, src,imageDetails:dict,engineType:EngineType,type:int):
         """ [이미지 중복 체크] \n
             이미지가 중복인 경우 -> return True \n 
             이미지가 중복이 아닌 경우 -> return False
         """
         # 이미지 소스 비교
-        if keyword in imageDetails[ROOT_PATH]: #해당 키워드가 데이터에 있는 경우
-            return src in imageDetails[ROOT_PATH][keyword]["urls"] 
-        
+        if type == 0:
+            try:
+                checkTarget_ref= [image["ref"] for image in imageDetails["data"]]
+                data = checkTarget_ref[checkTarget_ref.index(src)]
+                with open("./duplication_log.txt","a+") as file:
+                            file.write("\noccur duplication with src\n-------------------------------------\n")
+                            file.write(f"target : {src}\n")
+                            file.write(f'compare : {data}\n')
+                            file.write("------------------------------------\n")
+                return True
+            except ValueError:
+                return False
         else:
-            return False
+            try:
+                checkTarget_img = [image["name"] for image in imageDetails["data"]]
+                data = checkTarget_img[checkTarget_img.index( f"{engineType.name[0]}_{src}.jpg")]
+                with open("./duplication_log.txt","a+") as file:
+                        file.write("\noccur duplication with same hash\n-------------------------------------\n")
+                        file.write(f"target : {src}\n")
+                        file.write(f'compare : {data}\n')
+                        file.write("------------------------------------\n")
+                return True
+            except ValueError:
+                return False
 
     def init_detail_data(self,engineType:EngineType) -> dict:
         """
@@ -59,11 +80,20 @@ class NGCrawler:
         else:
             #기본으로 초기화
             dictionary = {
-                    ROOT_PATH: {
-
-                    }
+                "duplication_cnt":0,
+                TOTAL_FILE_CNT:0,
+                    "keywords":[],
+                    "data":[]
             }
         return dictionary
+
+    @staticmethod
+    def get_partial_image_detail(src:str,imageName:str,keyword:str )->dict:
+        return {
+            "name":imageName,
+            "ref" : src,
+            "keyword":keyword
+        }
 
     def save_detail_data(self,engineType:EngineType,imageDetails:dict):
         #json파일로 저장하는 작업
@@ -75,8 +105,6 @@ class NGCrawler:
     def __init__(self, search_on_google: bool = True, search_on_naver: bool = True, limit=1000,try_cnt:int = 5):
         """ 크롤러 초기화 """
         #Variable
-        self.imgCntNaver = 0
-        self.imgCntGoogle = 0
         self.driver = None
         self.try_cnt = try_cnt
 
@@ -92,7 +120,7 @@ class NGCrawler:
 
         userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_0_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.192 Safari/537.36"
         options = webdriver.ChromeOptions()
-        options.add_argument('--headless=new')
+        # options.add_argument('--headless=new')
         options.add_argument('no-sandbox')
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument('window-size=1920x1080')
@@ -120,11 +148,15 @@ class NGCrawler:
                 # 더 로딩할 수 있는 버튼이 있는 경우
                 if loadingState == 5 and btnMore.get_attribute("style") == "":
                     #버튼을 누른다
-                    btnMore.click()
+                    try:
+                        ActionChains(driver).move_to_element(btnMore).click().perform()
+                    except ElementClickInterceptedException:
+                        ActionChains(driver).move_to_element(btnMore).send_keys(Keys.ENTER)
                 elif loadingState == 3 or (loadingState == 5 and notNeedMoreLoad):   
                     try:
-                        driver.find_element(By.CLASS_NAME,"r0zKGf").click()  #더이상 관련없는 이미지인 경우
-                        break
+                        ActionChains(driver).move_to_element(driver.find_element(By.CLASS_NAME,"r0zKGf")).click().perform()
+                    except ElementClickInterceptedException:
+                        ActionChains(driver).move_to_element(driver.find_element(By.CLASS_NAME,"r0zKGf")).send_keys(Keys.ENTER)
                     except Exception:# 끝까지 도달한 경우
                         break
                 else:  # 현재 페이지 까지 로딩한 경우
@@ -132,25 +164,30 @@ class NGCrawler:
         else:  # 네이버 이미지 검색
             while True:
                 body.send_keys(Keys.END)
-                if driver.find_elements(By.XPATH, '//div[contains(@class,"photo_loading")]')[0].get_attribute('style') == '':
+                body.send_keys(Keys.UP)
+                time.sleep(.5)
+                body.send_keys(Keys.DOWN)
+                load = driver.find_elements(By.XPATH, '//div[contains(@class,"photo_loading")]')
+                if len(load)>0 and load[0].get_attribute('style') == '':
                     time.sleep(1)
                 else:
                     break
 
     #이미지 관련
 
-    def save_image(self, engineType: EngineType, src: str, keyword: str, idx: int, savePath: str,imageDetails:dict):
+    def save_image(self, engineType: EngineType, src: str, keyword: str,savePath: str,imageDetails:dict):
         """ 이미지 소스에 있는 사진을 저장함"""
         if engineType == EngineType.Google:
             res = get(src).content if not src[:4] == 'data' else base64.b64decode(src[src.find(","):])
         else:
             res = get(src).content
-        imgName = f"{engineType.name[0]}_{get_image_hash(10,io.BytesIO(res))}.jpg"  # 파일명 지정
+        image_hash = get_image_hash(10,io.BytesIO(res))
+        imgName = f"{engineType.name[0]}_{image_hash}.jpg"  # 파일명 지정
+
         with open(f"{savePath}/{imgName}", 'wb') as file:
             file.write(res)# 사진을 저장
             file.close()
-        imageDetails[ROOT_PATH][keyword]["files"].append(
-            imgName)
+        imageDetails["data"].append(self.get_partial_image_detail(src=src,imageName=imgName,keyword=keyword))
         return imageDetails
 
     def get_image_src(self, engineType: EngineType, driver: webdriver.Chrome, imgTag):
@@ -214,26 +251,15 @@ class NGCrawler:
         """
         이미지 태그로부터 실질적인 이미지를 다운로드 받는 프로세스를 진행
         """
-        idx = 0
         for imgTag in imgTags:
             imgSrc = self.get_image_src(
                 engineType, driver, imgTag)  # 이미지 소스 가져옴
-
             #이미지 중복 다운로드 우회
-            if not self.duplication_check_image(imgSrc, keyword, engineType,imageDetails):
-                #데이터 저장
-                if not keyword in imageDetails[ROOT_PATH]:
-                    imageDetails[ROOT_PATH][keyword] = {"urls":[],"files":[]}
-                idx+=1
-                imageDetails[ROOT_PATH][keyword]["urls"].append(imgSrc)
-                imageDetails = self.save_image(engineType, imgSrc, keyword, idx, savePath,imageDetails)
-                print(f"{keyword} 이미지 저장 작업 from {engineType.name} : {idx}")
+            if not self.duplication_check_image(imgSrc,imageDetails,engineType,0):
+                imageDetails = self.save_image(engineType, imgSrc, keyword, savePath,imageDetails)
             else:
-                print(
-                    f"{keyword} 이미지 저장 작업 from {engineType.name} : {idx} skipped")
-
-        self.imgCntGoogle += idx
-        self.imgCntNaver += idx
+                imageDetails["duplication_cnt"]+=1
+     
         return imageDetails
         
 
@@ -242,7 +268,7 @@ class NGCrawler:
         self.doCrawl(keywords=args[0], engineType=args[1])
 
     def doCrawl(self, engineType: EngineType, keywords):
-        FORDER_PATH = "./crawledData/googleImg" if engineType == EngineType.Google else "./crawledData/naverImg"
+        FORDER_PATH = f"./crawledData/google_{now.strftime('%Y%m%d')}" if engineType == EngineType.Google else f"./crawledData/naver_{now.strftime('%Y%m%d')}"
         baseUrl = "https://www.google.com/search?q=" if engineType == EngineType.Google else "https://search.naver.com/search.naver?where=image&sm=tab_jum&query="  # 이미지 검색 쿼리 기본 URL
 
         details = self.init_detail_data(engineType=engineType)
@@ -253,29 +279,33 @@ class NGCrawler:
       
 
         # 각 키워드별로 쿼리 실행
-        for keyword in keywords:
 
-            print(f"Start to search {keyword} image from {engineType.name}")
-            imgTags = self.get_image_tags_from_page(engineType, self.driver, keyword,
-                                baseUrl, FORDER_PATH, self.limit)
-            print(f"Done to search {keyword} image from {engineType.name}")
-            details =  self.download_image_from_tags(imgTags,engineType,self.driver,keyword,FORDER_PATH,details)
-        print(
-            f"total download from {engineType.name} : {self.imgCntGoogle if engineType == EngineType.Google else self.imgCntNaver}")
-        length = 0
-        for i in details[ROOT_PATH]:
-            details[ROOT_PATH][i]["fileCnt"] = len(details[ROOT_PATH][i]["files"])
-            length += len(details[ROOT_PATH][i]["files"])
-        details["totalFileCnt"] = length
-        self.save_detail_data(engineType,details)
+        for keyword in keywords:
+            if keyword in details["keywords"]: #이미 검색한 쿼리인 경우 스킵
+                print(f"Skip searching {keyword} image from {engineType.name}")
+            else:
+                print(f"Start to search {keyword} image from {engineType.name}")
+                imgTags = self.get_image_tags_from_page(engineType, self.driver, keyword,
+                                    baseUrl, FORDER_PATH, self.limit)
+                print(f"Done to search {keyword} image from {engineType.name}")
+                print(f"Start to {keyword} 이미지 저장 작업 from {engineType.name}")
+                details =  self.download_image_from_tags(imgTags,engineType,self.driver,keyword,FORDER_PATH,details)
+                print(f"Done to {keyword} 이미지 저장 작업 from {engineType.name}")
+                details["keywords"].append(keyword)
+                print(
+                    f"total download from {engineType.name} :{len(details['data'])}")
+                details[TOTAL_FILE_CNT] = len(details["data"])
+                
+                self.save_detail_data(engineType,details)
         self.driver.close()  # 웹 드라이버 종료
+   
 
     @staticmethod
     def get_keyword_from_text_file() -> list:
         #검색 키워드 가져오기
         if os.path.exists("./keyword.txt"):
             with open("./keyword.txt", 'rt') as f:
-                keywords = [line.rstrip() for line in f.readlines()[1:]]
+                keywords = [line.rstrip() for line in f.readlines()[1:] if not line== ""]
                 if len(keywords) == 0:
                     print("keyword.txt에 키워드를 입력하고 진행해주세요")
                     keywords = None

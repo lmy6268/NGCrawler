@@ -4,3 +4,5 @@ googleImg
 .DS_Store
 *.json
 keyword.txt
+crawledData
+duplication_log.txt
