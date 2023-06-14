@@ -1,6 +1,5 @@
 from PIL import Image
 
-import imagehash
 def dhash(image, hash_size):
     # Grayscale and shrink the image.
     image = image.convert('L').resize(
@@ -23,7 +22,6 @@ def dhash(image, hash_size):
     return hash_num
 
 def get_image_hash(hash_size, img_path):
-
     image = Image.open(img_path)
     size = image.size[0] * image.size[1]
     img_hash = dhash(image, hash_size)

@@ -11,8 +11,8 @@ def do_seperate():
             file.close()      
     e_n = 0
     e_g =0
-    F_G =f"./crawledData/google_eiffel_{now.strftime('%Y%m%d')}/"
-    F_N = f"./crawledData/naver_eiffel_{now.strftime('%Y%m%d')}/"
+    F_G =f"./crawledData/google-eiffel-{now.strftime('%Y%m%d')}/"
+    F_N = f"./crawledData/naver-eiffel-{now.strftime('%Y%m%d')}/"
     os.makedirs(F_G,exist_ok=True)
     os.makedirs(F_N,exist_ok=True)
 
@@ -23,7 +23,7 @@ def do_seperate():
             src  = data["name"]
             #파일 이동
             try:
-                shutil.move("./crawledData/eiffelImg/"+src,F_G+src)
+                shutil.move("./crawledData/google-{now.strftime('%Y%m%d')/}"+src,F_G+src)
             except FileNotFoundError:
                 pass
 
@@ -32,7 +32,7 @@ def do_seperate():
             src  = data["name"]
             e_n+=1
             try:
-                shutil.move("./crawledData/eiffelImg/"+src,F_N+src)
+                shutil.move(f"./crawledData/naver-{now.strftime('%Y%m%d')}/"+src,F_N+src)
             except FileNotFoundError:
                 pass
     print(f"naver: {e_n} / google: {e_g}")
