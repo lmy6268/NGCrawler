@@ -80,4 +80,4 @@ Macbook Air M1 2020, MacOS Ventura 13.4, Python 3.9.6, Visual Studio Code 1.79.1
 ## <b>Downloaded Image Path</b>
 ---
 You can find images in "./crawledData". <br/>
-And Naver crawled result is recored in Json and Google's too. 
+The crawled result is recorded by Json each Search Engine. 
