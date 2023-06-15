@@ -1,12 +1,12 @@
 # <b>ng-crawler</b>
 ```zsh
-NG-Crawler is a crawler for crawling images using keywords from Naver, Google at the same time.
+NG-Crawler is a crawler for crawling images by keywords from Naver, Google at the same time.
 ```
 
 ## <b>Environment</b>
 ---
 ```zsh
-Macbook Air M1, MacOS Ventura 13.4, Python 3.9.6, Visual Studio Code 1.79.1 (Universal)
+Macbook Air M1 2020, MacOS Ventura 13.4, Python 3.9.6, Visual Studio Code 1.79.1 (Universal)
 ```
 
 ## <b>How to use</b>
@@ -37,7 +37,8 @@ Macbook Air M1, MacOS Ventura 13.4, Python 3.9.6, Visual Studio Code 1.79.1 (Uni
 
     In NGCrawler, it has parameters. You can pass value to each parameter using this crawler. 
     ```python
-
+    # 'image_download_api.py'
+    
     class NGCrawler:
         def __init__(
             #You can download images using google. 
@@ -79,4 +80,4 @@ Macbook Air M1, MacOS Ventura 13.4, Python 3.9.6, Visual Studio Code 1.79.1 (Uni
 ## <b>Downloaded Image Path</b>
 ---
 You can find images in "./crawledData". <br/>
-And Naver crawled result is recored in Json and Google's too. 
+The crawled result is recorded by Json each Search Engine. 
