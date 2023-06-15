@@ -1,6 +1,6 @@
 # <b>ng-crawler</b>
 ```zsh
-NG-Crawler is a crawler for crawling images by keywords from Naver, Google at the same time.
+NG-Crawler is the crawler for crawling images by keywords from Naver, Google at the same time.
 ```
 
 ## <b>Environment</b>
