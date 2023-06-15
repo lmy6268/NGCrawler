@@ -1,22 +1,27 @@
 # <b>ng-crawler</b>
-```NG-Crawler is a crawler for crawling images using keywords from Naver, Google at the same time.```
+```zsh
+NG-Crawler is a crawler for crawling images using keywords from Naver, Google at the same time.
+```
 
 ## <b>Environment</b>
 ---
-```Macbook Air M1, MacOS Ventura 13.4, Python 3.9.6, Visual Studio Code 1.79.1 (Universal)```
+```zsh
+Macbook Air M1, MacOS Ventura 13.4, Python 3.9.6, Visual Studio Code 1.79.1 (Universal)
+```
 
 ## <b>How to use</b>
 ---
-</br>
-
-1. Go to the source path using Terminal. <br/><br/>
-    ``` cd  <source path>```
-    <br/><br/>
-2. Install python libraries by requirements.txt. <br/><br/>
-    ```pip install -r ./requirements.txt``` <br/><br/>
+1. <b>Go to the source path using Terminal.</b> <br/>
+    ``` zsh
+    cd  <source path>
+    ```
+2. <b>Install python libraries by requirements.txt.</b> <br/>
+    ```zsh
+    pip install -r ./requirements.txt
+    ``` 
 3. Edit main.py and keyword.txt using editor tools. (VS Code etc...)<br/>
     <b>( If you can't find keyword.txt, create the file by running the 'main.py' once.)</b>
-    <br/><br/>
+    <br/>
     ``` python
     # 'main.py'
 
@@ -41,7 +46,7 @@
             search_on_naver: bool = True, 
             #If you make True value both search_on_google and search_on_google_full, 
             #you can download image with full resolution.
-            search_on_google_full =False, 
+            search_on_google_full = False, 
             #If you make True value both search_on_naver and search_on_naver_full, 
             #you can download image with full resolution.
             search_on_naver_full = False,
@@ -58,9 +63,10 @@
     ```
     //각 줄에 하나씩 키워드를 입력해주세요.  <- 이 줄은 지우지 마세요.
     감성사진
-    여행사진
+    여행사진 
+    ... put your keywords.
     ```
-4. run main.py to get image.
+4. <b>run main.py to get image.</b>
 
     ```zsh
     python3 ./main.py
