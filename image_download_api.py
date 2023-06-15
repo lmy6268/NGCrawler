@@ -41,11 +41,11 @@ class NGCrawler:
     네이버, 구글 동시에 검색, 다운로드 가능한 크롤러
     """
 
-    def __init__(self, search_on_google: bool = True, search_on_naver: bool = True, search_on_google_full =False, search_on_naver_full = False, limit=300,try_cnt:int = 5):
+    def __init__(self, search_on_google: bool = True, search_on_naver: bool = True, search_on_google_full =False, search_on_naver_full = False, limit=500):
         """ 크롤러 초기화 """
         #Variable
         self.driver = None
-        self.try_cnt = try_cnt
+        
 
         #on/off
         self.search_on_google = search_on_google
