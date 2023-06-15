@@ -1,3 +1,5 @@
-selenium
-webdriver-manager
-PIL
+Pillow==9.3.0
+requests==2.28.1
+selenium==4.6.0
+webdriver-manager==3.8.5
+
