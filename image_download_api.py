@@ -45,8 +45,6 @@ class NGCrawler:
         """ 크롤러 초기화 """
         #Variable
         self.driver = None
-        
-
         #on/off
         self.search_on_google = search_on_google
         self.search_on_naver = search_on_naver
@@ -198,7 +196,6 @@ class NGCrawler:
             
             headers = {"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 11_0_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.192 Safari/537.36"}
             res = requests.get(src,headers=headers).content if not src[:4] == 'data' else base64.b64decode(src[src.find(","):])
-            print(f"getFrom:{src}")
             f.write(res) #tmp파일로 저장 
             f.close()
         image_hash = get_image_hash(10,f"./tmp_{engineType.name}.jpg") 
@@ -214,19 +211,20 @@ class NGCrawler:
         if engineType == EngineType.Google:
         #4. 수집된 URL을 이용하여 사진 저장
             #4-1. 구글 이미지 다운로드
-            if self.search_on_google_full:
-                dataPath = [By.XPATH,"//img[contains(@class,'iPVvYb')]"]
-                ActionChains(driver).move_to_element(imgTag).click().perform()
-                try:
-                    WebDriverWait(driver,3).until(
-                        EC.presence_of_element_located((dataPath[0],dataPath[1]))
-                    )
+            
+            dataPath = [By.XPATH,"//img[contains(@class,'iPVvYb')]"]
+            ActionChains(driver).move_to_element(imgTag).click().perform()
+            try:
+                WebDriverWait(driver,3).until(
+                    EC.presence_of_element_located((dataPath[0],dataPath[1]))
+                )
+                if self.search_on_google_full:
                     image_src = driver.find_element(dataPath[0],dataPath[1]).get_attribute("src")
-                except TimeoutException:
+                else:
                     image_src = imgTag.get_attribute("src")
-            else:
+            except TimeoutException:
                 image_src = imgTag.get_attribute("src")
-
+        
         else:  # 4-2. 네이버 이미지 다운로드
             #개별 이미지 로딩 중에 긁어오는 경우가 발생하다보니, 각 소스별로 로딩 이미지가 아닌 소스 이미지가 나타날 때 긁어올 수 있도록 진행.
             image_src = imgTag.get_property('src')
@@ -330,7 +328,7 @@ class NGCrawler:
             with open("./keyword.txt", 'rt') as f:
                 keywords = [line.rstrip() for line in f.readlines()[1:] if not line== ""]
                 if len(keywords) == 0:
-                    print("keyword.txt에 키워드를 입력하고 진행해주세요")
+                    print("Error! keyword.txt에 키워드를 입력하고 진행해주세요")
                     keywords = None
                 f.close()
             return keywords
@@ -338,7 +336,7 @@ class NGCrawler:
             with open("./keyword.txt", 'wt') as f:
                 f.write("//각 줄에 하나씩 키워드를 입력해주세요.  <- 이 줄은 지우지 마세요.")
                 f.close()
-            print("keyword.txt에 키워드를 입력하고 진행해주세요")
+            print("Error! : keyword.txt에 키워드를 입력하고 진행해주세요.")
             return None
         
 
@@ -370,3 +368,5 @@ class NGCrawler:
 
             print('Task ended. Pool join.')
             print(f"elapse time : {time.strftime('%H:%M:%S', time.gmtime(time.time()-start))}")
+        else:
+            exit(1)

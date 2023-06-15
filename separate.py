@@ -45,5 +45,4 @@ def do_seperate():
             json.dump(d_google,file,
                         indent=2, ensure_ascii=False)
             file.close()      
-if __name__ == "__main__":
-   do_seperate()
+
