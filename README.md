@@ -3,7 +3,7 @@
 
 ## <b>Environment</b>
 ---
-```Macbook Air M1, MacOS Ventura 13.4, Python 3.9.6```
+```Macbook Air M1, MacOS Ventura 13.4, Python 3.9.6, Visual Studio Code 1.79.1 (Universal)```
 
 ## <b>How to use</b>
 ---
