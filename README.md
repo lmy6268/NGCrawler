@@ -37,7 +37,7 @@ Macbook Air M1, MacOS Ventura 13.4, Python 3.9.6, Visual Studio Code 1.79.1 (Uni
 
     In NGCrawler, it has parameters. You can pass value to each parameter using this crawler. 
     ```python
-
+    # 'image_download_api.py'
     class NGCrawler:
         def __init__(
             #You can download images using google. 
