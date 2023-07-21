@@ -41,7 +41,7 @@ class NGCrawler:
     네이버, 구글 동시에 검색, 다운로드 가능한 크롤러
     """
 
-    def __init__(self, search_on_google: bool = True, search_on_naver: bool = True, search_on_google_full =False, search_on_naver_full = False, limit=500):
+    def __init__(self, search_on_google: bool = True, search_on_naver: bool = True, search_on_google_full =False, search_on_naver_full = False, limit=500,headless = True):
         """ 크롤러 초기화 """
         #Variable
         self.driver = None
@@ -51,7 +51,7 @@ class NGCrawler:
         self.search_on_google_full = search_on_google_full
         self.search_on_naver_full= search_on_naver_full
         self.limit = limit
-
+        self.headless = headless
        
 
     def init_driver(self):
@@ -59,7 +59,8 @@ class NGCrawler:
 
         userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_0_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.192 Safari/537.36"
         options = webdriver.ChromeOptions()
-        options.add_argument('--headless=new') #run on background
+        if self.headless:
+            options.add_argument('--headless=new') #run on background
         options.add_argument('no-sandbox')
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument('window-size=1920x1080')
@@ -330,15 +331,15 @@ class NGCrawler:
             with open("./keyword.txt", 'rt') as f:
                 keywords = [line.rstrip() for line in f.readlines()[1:] if not line== ""]
                 if len(keywords) == 0:
-                    print("Error! keyword.txt에 키워드를 입력하고 진행해주세요")
+                    print("Error! Please process after adding Keywords in keyword.txt.")
                     keywords = None
                 f.close()
             return keywords
         else:
             with open("./keyword.txt", 'wt') as f:
-                f.write("//각 줄에 하나씩 키워드를 입력해주세요.  <- 이 줄은 지우지 마세요.")
+                f.write("// Add keyword what you want to search in each line. <- Do not delete this Line!!")
                 f.close()
-            print("Error! : keyword.txt에 키워드를 입력하고 진행해주세요.")
+            print("Error! Please process after adding Keywords in keyword.txt.")
             return None
         
 
