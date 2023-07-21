@@ -1,6 +1,6 @@
 # <b>ng-crawler</b>
 ```zsh
-NG-Crawler is a crawler for crawling images by keywords from Naver, Google at the same time.
+NG-Crawler is the crawler for crawling images by keywords from Naver, Google at the same time.
 ```
 
 ## <b>Environment</b>
@@ -45,10 +45,10 @@ Macbook Air M1 2020, MacOS Ventura 13.4, Python 3.9.6, Visual Studio Code 1.79.1
             search_on_google: bool = True, 
             #You can download images using naver. 
             search_on_naver: bool = True, 
-            #If you make True value both search_on_google and search_on_google_full, 
+            #If you make the value True value both search_on_google and search_on_google_full, 
             #you can download image with full resolution.
             search_on_google_full = False, 
-            #If you make True value both search_on_naver and search_on_naver_full, 
+            #If you make the value True both search_on_naver and search_on_naver_full, 
             #you can download image with full resolution.
             search_on_naver_full = False,
             #Limit the image amount 
