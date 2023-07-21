@@ -59,7 +59,7 @@ class NGCrawler:
 
         userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_0_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.192 Safari/537.36"
         options = webdriver.ChromeOptions()
-        options.add_argument('--headless=new')
+        options.add_argument('--headless=new') #run on background
         options.add_argument('no-sandbox')
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument('window-size=1920x1080')
@@ -153,12 +153,14 @@ class NGCrawler:
                 except TypeError:
                     loadingState = int(driver.find_elements(
                         By.XPATH, '//div[contains(@class,"DwpMZe")]')[0].get_attribute("data-status"))
+
                 btnMore = driver.find_elements(
-                    By.XPATH, '//div[contains(@class,"YstHxe")]')[0]
+                    By.XPATH, '//div[contains(@class,"FAGjZe")]')[0] # 23.07.21 수정 -> 클래스 명이 변경됨.
+                
                 notNeedMoreLoad = True if len(driver.find_elements(
                     By.XPATH, '//div[contains(@class,"WYR1I")]'))>0 else False
                 # 더 로딩할 수 있는 버튼이 있는 경우
-                if loadingState == 5 and btnMore.get_attribute("style") == "":
+                if loadingState == 5 and btnMore != None and btnMore.get_attribute("style") == "":
                     #버튼을 누른다
                     try:
                         ActionChains(driver).move_to_element(btnMore).click().perform()
