@@ -4,6 +4,7 @@ NG-Crawler is the crawler for crawling images by keywords from Naver, Google at 
 ```
 
 ## <b>Environment</b>
+<i> Test Environment </i>
 ```zsh
 Macbook Air M1 2020, MacOS Ventura 13.4, Python 3.9.6, Visual Studio Code 1.79.1 (Universal)
 ```
