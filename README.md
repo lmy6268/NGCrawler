@@ -36,11 +36,11 @@ Macbook Air M1 2020, MacOS Ventura 13.4, Python 3.9.6, Visual Studio Code 1.79.1
     <br>-S, --Show : Not Use Headless Mode.
 
     ```zsh
-    python3 ./main.py {parmeters}
+    python3 ./main.py {parameters}
     ```
     or
      ```zsh
-    python ./main.py {parmeters}
+    python ./main.py {parameters}
     ```
 
 ## <b>How do I find the downloaded images?</b>
