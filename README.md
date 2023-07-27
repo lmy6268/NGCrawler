@@ -1,5 +1,5 @@
 # <b>ng-crawler</b>
-```zsh
+```
 NG-Crawler is the crawler for crawling images by keywords from Naver, Google at the same time.
 ```
 
@@ -39,10 +39,7 @@ Macbook Air M1 2020, MacOS Ventura 13.4, Python 3.9.6, Visual Studio Code 1.79.1
     ```zsh
     python3 ./main.py {parameters}
     ```
-    or
-     ```zsh
-    python ./main.py {parameters}
-    ```
+   
 
 ## <b>How do I find the downloaded images?</b>
 ---
